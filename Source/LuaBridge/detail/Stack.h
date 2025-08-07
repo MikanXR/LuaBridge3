@@ -1232,16 +1232,14 @@ struct Stack<std::tuple<Types...>>
 private:
     static constexpr std::size_t Size = std::tuple_size_v<std::tuple<Types...>>;
 
-    template <std::size_t Index = 0>
-    static auto push_element(lua_State*, const std::tuple<Types...>&)
-        -> std::enable_if_t<Index == sizeof...(Types), Result>
+    template <std::size_t Index = 0, typename = std::enable_if_t<Index == sizeof...(Types)>>
+    static Result push_element(lua_State*, const std::tuple<Types...>&)
     {
         return {};
     }
 
-    template <std::size_t Index = 0>
-    static auto push_element(lua_State* L, const std::tuple<Types...>& t)
-        -> std::enable_if_t<Index < sizeof...(Types), Result>
+    template <std::size_t Index = 0, typename = std::enable_if_t<Index < sizeof...(Types)>, typename = void>
+    static Result push_element(lua_State* L, const std::tuple<Types...>& t)
     {
         using T = std::tuple_element_t<Index, std::tuple<Types...>>;
 
@@ -1256,16 +1254,14 @@ private:
         return push_element<Index + 1>(L, t);
     }
 
-    template <std::size_t Index = 0>
-    static auto pop_element(lua_State*, int, std::tuple<Types...>&)
-        -> std::enable_if_t<Index == sizeof...(Types), Result>
+    template <std::size_t Index = 0, typename = std::enable_if_t<Index == sizeof...(Types)>>
+    static Result pop_element(lua_State*, int, std::tuple<Types...>&)
     {
         return {};
     }
 
-    template <std::size_t Index = 0>
-    static auto pop_element(lua_State* L, int absIndex, std::tuple<Types...>& t)
-        -> std::enable_if_t<Index < sizeof...(Types), Result>
+    template <std::size_t Index = 0, typename = std::enable_if_t<Index < sizeof...(Types)>, typename = void>
+    static Result pop_element(lua_State* L, int absIndex, std::tuple<Types...>& t)
     {
         using T = std::tuple_element_t<Index, std::tuple<Types...>>;
 
